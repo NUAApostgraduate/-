@@ -1,0 +1,88 @@
+/* ============================================================
+   animations.css — 全局动效收口（与颜色无关）
+   引入位置：styles.css 之后（需要覆盖其中的 :active 规则），
+   配合 animations.js 的 IntersectionObserver 实现卡片交错入场。
+   prefers-reduced-motion 时以下动效全部禁用。
+   ============================================================ */
+
+/* ── 1. 视图切换：内容区淡入上移 8px（0.25s ease-out）── */
+.view.active {
+  animation: view-enter 0.25s ease-out;
+}
+
+@keyframes view-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── 2. 卡片进入视口：依次淡入（交错 60ms，由 animations.js 写入 --stagger）──
+   html.anim-ready 由 JS 启动时添加；无 JS 或降级环境下卡片保持可见 */
+html.anim-ready [data-card] {
+  opacity: 0;
+}
+
+html.anim-ready [data-card].card-in {
+  opacity: 1;
+  animation: card-in 0.55s ease-out backwards;
+  animation-delay: var(--stagger, 0ms);
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── 3. 按钮按压：0.96 缩放 ── */
+button:active {
+  transform: scale(0.96);
+}
+
+.nav-item:active,
+.segment:active,
+.icon-btn:active,
+.primary-btn:active,
+.secondary-btn:active,
+.prompt-chip:active {
+  transform: scale(0.96);
+}
+
+.history-item.active:active {
+  transform: translateX(4px) scale(0.96);
+}
+
+/* ── 4. prefers-reduced-motion：以上全部禁用 ── */
+@media (prefers-reduced-motion: reduce) {
+  .view.active {
+    animation: none;
+  }
+
+  html.anim-ready [data-card],
+  html.anim-ready [data-card].card-in {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+
+  button:active,
+  .nav-item:active,
+  .segment:active,
+  .icon-btn:active,
+  .primary-btn:active,
+  .secondary-btn:active,
+  .prompt-chip:active,
+  .history-item.active:active {
+    transform: none;
+  }
+}

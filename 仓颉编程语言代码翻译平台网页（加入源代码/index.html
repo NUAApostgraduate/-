@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>仓颉编程语言代码翻译平台</title>
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./animations.css" />
+  <link rel="stylesheet" href="./linear.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="平台导航">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">CJ</div>
+        <div>
+          <strong>仓颉迁移台</strong>
+          <span>Code Translation Lab</span>
+        </div>
+      </div>
+
+      <nav class="nav-list">
+        <button class="nav-item active" type="button" data-view="home" aria-label="打开首页" aria-current="page">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9.5 12 3l9 6.5V20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9.5Z"/><path d="M9.5 21.5v-7h5v7"/></svg>
+          <span>首页</span>
+        </button>
+        <button class="nav-item" type="button" data-view="workbench" aria-label="打开翻译工作台">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></svg>
+          <span>翻译工作台</span>
+        </button>
+        <button class="nav-item" type="button" data-view="history" aria-label="打开翻译记录">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 2.64-6.36L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
+          <span>翻译记录</span>
+        </button>
+        <button class="nav-item" type="button" data-view="assistant" aria-label="打开迁移助手">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10Z"/></svg>
+          <span>迁移助手</span>
+        </button>
+      </nav>
+
+      <!-- 后端状态卡片由 app.js 的健康检测结果更新 -->
+      <div class="backend-widget" aria-label="后端连接状态">
+        <span class="status-dot idle" id="backendDot" aria-hidden="true"></span>
+        <div class="backend-widget-copy">
+          <strong id="backendWidgetStatus">后端未检测</strong>
+          <code>127.0.0.1:8765</code>
+        </div>
+        <!-- app.js 的 setBackendStatus 会写这个元素，仅作 JS 状态锚点，保持隐藏 -->
+        <span class="backend-status idle" id="backendStatus" hidden>未检测</span>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar page-titlebar">
+        <div class="page-title-group">
+          <h1 id="pageTitle">首页</h1>
+          <p class="topbar-copy page-breadcrumb">
+            <span class="breadcrumb-root">仓颉翻译平台</span>
+            <span class="breadcrumb-sep" aria-hidden="true">/</span>
+            <span id="pageCrumb">平台总览</span>
+          </p>
+        </div>
+        <div class="page-actions" id="pageActions">
+          <!-- 各视图的次要操作按钮（如 history 的 #refreshHistoryBtn）可由 JS 按当前视图挂载到这里 -->
+          <button class="secondary-btn small-btn" type="button" id="healthBtn">检测后端</button>
+        </div>
+      </header>
+
+      <section class="view active home-view" id="home" aria-labelledby="home-title">
+        <section class="home-hero">
+          <div class="home-hero-copy">
+            <div class="home-badge">
+              <span aria-hidden="true"></span>
+              AI 驱动的仓颉代码迁移平台
+            </div>
+            <h2 id="home-title">
+              <span class="home-title-line">从现有代码到<span class="home-title-nowrap">仓颉项目</span></span>
+              <em class="home-title-line home-title-accent">迁移，更简单。</em>
+            </h2>
+            <p class="home-hero-description">面向 Java、C++、Python 与网页项目，提供代码理解、智能翻译、语法修复、编译验证和迁移问答的一站式工作流。</p>
+            <div class="home-hero-actions">
+              <button class="home-primary-action" type="button" data-home-target="workbench" data-home-module="snippet">
+                开始翻译
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12a1 1 0 0 1 1-1h9.59l-3.3-3.3a1 1 0 1 1 1.42-1.4l5 5a1 1 0 0 1 0 1.4l-5 5a1 1 0 0 1-1.42-1.4l3.3-3.3H6a1 1 0 0 1-1-1Z"/></svg>
+              </button>
+              <button class="home-secondary-action" type="button" data-home-target="history">查看翻译记录</button>
+            </div>
+            <div class="home-language-row" aria-label="支持的源语言">
+              <span class="home-language-label">支持语言</span>
+              <div class="home-language-list">
+                <strong>Java</strong>
+                <strong>C / C++</strong>
+                <strong>Python</strong>
+                <strong>HTML / CSS / JS</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="home-code-visual" aria-label="代码迁移示意">
+            <div class="home-code-window">
+              <div class="home-window-bar">
+                <span></span><span></span><span></span>
+                <small>Translator.cj</small>
+              </div>
+              <div class="home-code-body">
+                <div class="home-code-labels"><span>JAVA</span><span>CANGJIE</span></div>
+                <div class="home-code-columns">
+                  <pre><code><i>public class</i> Hello {
+  <i>public static void</i> main() {
+    System.out.println(<b>"Hello"</b>);
+  }
+}</code></pre>
+                  <div class="home-code-arrow" aria-hidden="true">→</div>
+                  <pre><code><i>main</i>() {
+  println(<b>"Hello"</b>)
+}</code></pre>
+                </div>
+                <div class="home-code-status"><span aria-hidden="true">✓</span> 翻译示意 · 结果需验证</div>
+              </div>
+            </div>
+            <div class="home-float-card home-float-model"><span>AI</span><div><strong>本地 / 在线模型</strong><small>按任务选择翻译方式</small></div></div>
+            <div class="home-float-card home-float-check"><span>✓</span><div><strong>仓颉校验</strong><small>工具链可用时编译验证</small></div></div>
+          </div>
+        </section>
+
+        <div class="home-hero-seam" aria-hidden="true"></div>
+
+        <section class="home-capabilities" aria-labelledby="home-capabilities-title">
+          <div class="home-section-heading">
+            <div>
+              <p class="eyebrow">Core Capabilities</p>
+              <h2 id="home-capabilities-title">三项核心能力，覆盖完整迁移链路</h2>
+            </div>
+            <p>代码翻译包含三种迁移模式，问答与记录为独立辅助能力。</p>
+          </div>
+
+          <div class="home-product-grid">
+            <article class="home-product-card home-translation-suite">
+              <div class="home-product-head">
+                <span class="home-feature-icon teal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.7 6.3a1 1 0 0 1 0 1.4L4.41 12l4.3 4.3a1 1 0 1 1-1.42 1.4l-5-5a1 1 0 0 1 0-1.4l5-5a1 1 0 0 1 1.42 0Zm6.6 0a1 1 0 0 1 1.4 0l5 5a1 1 0 0 1 0 1.4l-5 5a1 1 0 0 1-1.4-1.4l4.29-4.3-4.3-4.3a1 1 0 0 1 0-1.4ZM14 3.76 11.93 20.3a1 1 0 0 1-1.98-.25l2.07-16.54A1 1 0 1 1 14 3.76Z"/></svg></span>
+                <div>
+                  <span class="home-product-kicker">核心功能 · Translation</span>
+                  <h3>代码智能翻译</h3>
+                  <p>在同一个翻译工作台中，根据代码规模和目标选择合适的迁移模式。</p>
+                </div>
+              </div>
+
+              <div class="home-translation-options" aria-label="翻译模式">
+                <button class="home-translation-option" type="button" data-home-target="workbench" data-home-module="snippet">
+                  <span class="home-option-number">01</span>
+                  <span><strong>片段级翻译</strong><small>适合函数、类和短代码，快速生成仓颉实现。</small></span>
+                  <span class="home-option-arrow" aria-hidden="true">→</span>
+                </button>
+                <button class="home-translation-option" type="button" data-home-target="workbench" data-home-module="project">
+                  <span class="home-option-number">02</span>
+                  <span><strong>项目级迁移</strong><small>分析目录、依赖与跨文件调用，迁移完整工程。</small></span>
+                  <span class="home-option-arrow" aria-hidden="true">→</span>
+                </button>
+                <button class="home-translation-option" type="button" data-home-target="workbench" data-home-module="ui">
+                  <span class="home-option-number">03</span>
+                  <span><strong>网页 UI 迁移</strong><small>迁移 HTML、CSS、交互逻辑与静态资源。</small></span>
+                  <span class="home-option-arrow" aria-hidden="true">→</span>
+                </button>
+              </div>
+            </article>
+
+            <button class="home-product-card home-support-card" type="button" data-home-target="assistant">
+              <span class="home-feature-icon amber"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4a3 3 0 0 0-3 3v6a3 3 0 0 0 3 3h1v3a1 1 0 0 0 1.64.77L12.16 16H19a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H5Zm0 2h14a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-7.2a1 1 0 0 0-.64.23L8 16.86V15a1 1 0 0 0-1-1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Z"/></svg></span>
+              <span class="home-product-kicker">辅助能力 · Copilot</span>
+              <strong class="home-product-title">智能迁移问答</strong>
+              <small>结合当前源码和翻译结果，解释语法、定位错误并提供迁移建议。</small>
+              <span class="home-card-link">开始提问 →</span>
+            </button>
+
+            <button class="home-product-card home-support-card" type="button" data-home-target="history">
+              <span class="home-feature-icon coral"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 1-8.48 6H2a1 1 0 0 1-.8-1.6l2.5-3.33a1 1 0 0 1 1.6 0L7.8 7.4A1 1 0 0 1 7 9H5.62A7 7 0 1 0 12 5a1 1 0 1 1 0-2Zm0 4a1 1 0 0 1 1 1v3.38l2.45 1.41a1 1 0 1 1-1 1.74l-2.95-1.71a1 1 0 0 1-.5-.86V8a1 1 0 0 1 1-1Z"/></svg></span>
+              <b class="home-history-count" id="historyCountBadge" hidden>0</b>
+              <span class="home-product-kicker">管理能力 · Archive</span>
+              <strong class="home-product-title">翻译记录</strong>
+              <small>统一查看历史代码、模型、耗时、编译状态与生成产物。</small>
+              <span class="home-card-link">查看记录 →</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="home-workflow" aria-labelledby="home-workflow-title">
+          <div class="home-section-heading">
+            <div><p class="eyebrow">Simple Workflow</p><h2 id="home-workflow-title">三步完成一次迁移</h2></div>
+          </div>
+          <ol class="home-workflow-list">
+            <li><span>01</span><div><strong>导入代码</strong><small>按模式选择代码文件、项目文件夹或网页文件。</small></div></li>
+            <li><span>02</span><div><strong>智能翻译</strong><small>Java 片段使用本地模型，其他任务按配置调用在线模型。</small></div></li>
+            <li><span>03</span><div><strong>验证输出</strong><small>诊断修复；工具链可用时编译验证并保存记录。</small></div></li>
+          </ol>
+        </section>
+      </section>
+
+      <section class="view" id="workbench" aria-labelledby="workbench-title">
+        <h2 id="workbench-title" class="visually-hidden">代码翻译工作台</h2>
+
+        <!-- 一级标签：页面标题栏下方，全宽药丸 segmented（沿用 .segmented/.segment 与 data-module 绑定） -->
+        <div class="workbench-primary-tabs">
+          <div class="segmented" role="tablist" aria-label="翻译模块">
+            <button class="segment active" type="button" data-module="snippet" role="tab" aria-selected="true">片段级</button>
+            <button class="segment" type="button" data-module="project" role="tab" aria-selected="false">项目级</button>
+            <button class="segment" type="button" data-module="ui" role="tab" aria-selected="false">UI 迁移</button>
+          </div>
+        </div>
+
+        <!-- 模块说明提示（原 moduleNote，改为一排 12px 灰字） -->
+        <div class="module-note" id="moduleNote">复用 Java 到仓颉翻译模型，对函数、类与控制流进行片段级迁移。</div>
+
+        <div class="workspace-grid">
+          <section class="panel translator-panel">
+
+            <div class="control-row">
+              <label>
+                <span>源语言</span>
+                <select id="sourceLang">
+                  <option value="java">Java</option>
+                  <option value="cpp">C / C++</option>
+                  <option value="python">Python</option>
+                  <option value="web">HTML/CSS/JS</option>
+                </select>
+              </label>
+              <label>
+                <span>目标语言</span>
+                <select id="targetLang" disabled>
+                  <option>仓颉 Cangjie</option>
+                </select>
+              </label>
+              <label>
+                <span>策略</span>
+                <select id="strategy">
+                  <option value="model">模型翻译 + 语法校验</option>
+                  <option value="translator-api">真实片段算法 API</option>
+                  <option value="agent">逐文件模型翻译</option>
+                  <option value="whole-project">整项目模型翻译</option>
+                  <option value="vision">多模态控件识别</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="language-detection" id="languageDetection" role="status" aria-live="polite" hidden>
+              <span class="language-detection-icon" aria-hidden="true">!</span>
+              <div class="language-detection-content">
+                <strong id="languageDetectionTitle">检测到源语言可能不一致</strong>
+                <span id="languageDetectionCopy"></span>
+              </div>
+              <button class="secondary-btn small-btn" type="button" id="switchDetectedLanguageBtn">切换语言</button>
+            </div>
+
+            <div class="editor-grid">
+              <section class="editor-block" aria-label="源代码输入">
+                <div class="editor-title">
+                  <span id="sourceTitle">源代码</span>
+                  <div class="icon-actions">
+                    <button class="icon-btn import-btn" type="button" id="uploadBtn" title="导入代码文件" aria-label="导入代码文件" aria-describedby="importHint">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a1 1 0 0 1 1 1v8.59l2.3-2.3a1 1 0 1 1 1.4 1.42l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.42l2.3 2.3V4a1 1 0 0 1 1-1ZM5 17a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v1.5A1.5 1.5 0 0 1 18.5 21h-13A1.5 1.5 0 0 1 4 19.5V18a1 1 0 0 1 1-1Z"/></svg>
+                      <span id="uploadBtnText">导入文件</span>
+                    </button>
+                    <button class="icon-btn" type="button" id="clearBtn" title="清空输入" aria-label="清空输入">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3a1 1 0 0 0-1 1v1H5a1 1 0 1 0 0 2h1v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7h1a1 1 0 1 0 0-2h-3V4a1 1 0 0 0-1-1H9Zm1 2h4v1h-4V5Zm-2 2h8v12H8V7Zm2 2a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1Zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1Z"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <p class="import-hint" id="importHint" aria-live="polite">片段级：请选择 1 个源代码文件，建议不超过 240 行或 12000 字符。</p>
+                <textarea id="sourceCode" spellcheck="false"></textarea>
+                <input id="fileInput" type="file" hidden />
+              </section>
+
+              <div class="editor-swap" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M8 3 4 7l4 4M4 7h16M16 21l4-4-4-4M20 17H4"/></svg>
+              </div>
+
+              <section class="editor-block output-block" aria-label="仓颉代码输出">
+                <div class="editor-title">
+                  <span>仓颉输出</span>
+                  <div class="icon-actions">
+                    <button class="icon-btn" type="button" id="copyBtn" title="复制输出" aria-label="复制输出">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3a2 2 0 0 0-2 2v1H5a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-1h3a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H8Zm8 13V8a2 2 0 0 0-2-2H8V5h11v11h-3ZM5 8h9v11H5V8Z"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <pre id="targetCode" tabindex="0"></pre>
+                <div id="projectResult" class="project-result" role="status" aria-live="polite" hidden>
+                  <div class="project-result-icon" aria-hidden="true">✓</div>
+                  <h3>翻译已完成</h3>
+                  <p id="projectResultSummary"></p>
+                  <button id="downloadProjectBtn" class="primary-btn" type="button">下载翻译后的项目（ZIP）</button>
+                  <p class="project-result-hint">点击下载并选择本地保存位置。若浏览器不支持选择窗口，将使用浏览器的下载设置。</p>
+                  <p id="projectDownloadStatus" class="project-result-hint"></p>
+                </div>
+              </section>
+            </div>
+
+            <div class="actionbar">
+              <button class="primary-btn" type="button" id="translateBtn">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a1 1 0 0 1 .95.68l1.13 3.39a3 3 0 0 0 1.9 1.9l3.34 1.12a1 1 0 0 1 0 1.9l-3.34 1.12a3 3 0 0 0-1.9 1.9l-1.13 3.39a1 1 0 0 1-1.9 0l-1.13-3.39a3 3 0 0 0-1.9-1.9L4.68 11a1 1 0 0 1 0-1.9l3.34-1.12a3 3 0 0 0 1.9-1.9l1.13-3.39A1 1 0 0 1 12 2Zm0 4.16-.19.58A5 5 0 0 1 8.74 9.8l-.57.2.57.19a5 5 0 0 1 3.07 3.07l.19.58.19-.58a5 5 0 0 1 3.07-3.07l.57-.19-.57-.2a5 5 0 0 1-3.07-3.06L12 6.16ZM19 15a1 1 0 0 1 .95.68l.26.78a1 1 0 0 0 .63.63l.78.26a1 1 0 0 1 0 1.9l-.78.26a1 1 0 0 0-.63.63l-.26.78a1 1 0 0 1-1.9 0l-.26-.78a1 1 0 0 0-.63-.63l-.78-.26a1 1 0 0 1 0-1.9l.78-.26a1 1 0 0 0 .63-.63l.26-.78A1 1 0 0 1 19 15Z"/></svg>
+                运行翻译
+              </button>
+              <button class="secondary-btn" type="button" id="sampleBtn">载入示例</button>
+              <button class="secondary-btn" type="button" id="evaluateBtn">运行模型评测</button>
+              <div class="run-state" id="runState">等待运行翻译</div>
+            </div>
+
+            <!-- 二级标签：36px 标签条 + 手风琴面板（radio 互斥，默认全部折叠；.tab-dot 状态点逻辑由 JS 接） -->
+            <div class="workbench-secondary-tabs" aria-label="翻译辅助面板">
+              <input class="w-tab-input" type="radio" name="wbtabs" id="wbtab-repair" />
+              <label class="w-tab-head" for="wbtab-repair">
+                <span class="w-tab-title">修复诊断</span>
+                <span class="tab-dot" hidden></span>
+                <svg class="w-tab-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+              </label>
+              <div class="w-tab-body">
+                <div class="w-tab-inner">
+                  <label class="repair-toggle">
+                    <input id="repairToggle" type="checkbox" checked />
+                    <span>
+                      <strong>翻译前自动诊断并修复</strong>
+                      <small>检测语法错误、不完整片段，使用修复后的代码继续翻译</small>
+                    </span>
+                  </label>
+                  <div class="repair-panel" id="repairPanel" hidden>
+                    <div class="repair-panel-header">
+                      <div>
+                        <strong>语法诊断与修复报告</strong>
+                        <span id="repairSummary">等待运行翻译</span>
+                      </div>
+                      <span class="repair-badge idle" id="repairBadge">未检测</span>
+                    </div>
+                    <ol class="repair-list" id="repairList"></ol>
+                    <div class="repair-source-wrap">
+                      <div class="repair-source-title">原始代码标注</div>
+                      <div class="annotated-source" id="repairAnnotatedSource"></div>
+                    </div>
+                    <details class="repair-details" id="repairDetails">
+                      <summary>查看修复后的源代码</summary>
+                      <pre id="repairedCode"></pre>
+                      <button class="secondary-btn small-btn" type="button" id="applyRepairBtn">应用修复到输入</button>
+                    </details>
+                  </div>
+                </div>
+              </div>
+              <input class="w-tab-input" type="radio" name="wbtabs" id="wbtab-files" />
+              <label class="w-tab-head" for="wbtab-files">
+                <span class="w-tab-title">项目文件</span>
+                <span class="tab-dot" hidden></span>
+                <svg class="w-tab-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+              </label>
+              <div class="w-tab-body">
+                <div class="w-tab-inner">
+                  <div class="project-upload-panel" id="projectUploadPanel" hidden>
+                    <div class="project-upload-head">
+                      <div>
+                        <strong>本地项目上传</strong>
+                        <span id="projectFileSummary">请选择 1 个项目文件夹，系统会读取其中支持的源码和配置文件</span>
+                      </div>
+                      <div class="project-upload-actions">
+                        <button class="secondary-btn small-btn" type="button" id="projectFolderBtn">选择项目文件夹</button>
+                        <button class="secondary-btn small-btn" type="button" id="clearProjectFilesBtn">清空项目</button>
+                      </div>
+                    </div>
+                    <div class="project-file-list" id="projectFileList"></div>
+                    <input id="projectFolderInput" type="file" webkitdirectory directory multiple hidden />
+                  </div>
+                  <div class="project-upload-panel" id="uiExamplePanel" hidden>
+                    <div class="project-upload-head">
+                      <div>
+                        <strong>UI 迁移测试用例</strong>
+                        <span id="uiExampleSummary">内置网页 UI，可直接运行迁移测试</span>
+                      </div>
+                      <div class="project-upload-actions">
+                        <button class="secondary-btn small-btn" type="button" data-ui-example="task-board">任务看板</button>
+                        <button class="secondary-btn small-btn" type="button" data-ui-example="login-form">登录表单</button>
+                        <button class="secondary-btn small-btn" type="button" data-ui-example="filter-list">筛选列表</button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="project-upload-panel" id="uiUploadPanel" hidden>
+                    <div class="project-upload-head">
+                      <div>
+                        <strong>本地网页项目上传</strong>
+                        <span id="uiFileSummary">请选择 HTML、CSS、JavaScript 等网页文件，可一次选择多个文件</span>
+                      </div>
+                      <div class="project-upload-actions">
+                        <button class="secondary-btn small-btn" type="button" id="uiFilesBtn">选择网页文件</button>
+                        <button class="secondary-btn small-btn" type="button" id="clearUiFilesBtn">清空网页项目</button>
+                      </div>
+                    </div>
+                    <div class="project-file-list" id="uiFileList"></div>
+                    <input id="uiFilesInput" type="file" accept=".html,.htm,.css,.js,.ts,.jsx,.tsx,.json,.xml,.png,.jpg,.jpeg,.webp" multiple hidden />
+                  </div>
+                </div>
+              </div>
+              <input class="w-tab-input" type="radio" name="wbtabs" id="wbtab-examples" />
+              <label class="w-tab-head" for="wbtab-examples">
+                <span class="w-tab-title">数据集样例</span>
+                <span class="tab-dot" hidden></span>
+                <svg class="w-tab-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+              </label>
+              <div class="w-tab-body">
+                <div class="w-tab-inner">
+                  <div class="example-strip" id="exampleStrip">
+                    <div>
+                      <strong>GitHub 数据集示例库</strong>
+                      <span id="exampleMeta">正在加载样例</span>
+                    </div>
+                    <select id="exampleSelect" aria-label="选择数据集样例"></select>
+                    <div class="example-actions">
+                      <button class="secondary-btn small-btn" type="button" id="prevExampleBtn">上一个</button>
+                      <button class="secondary-btn small-btn" type="button" id="nextExampleBtn">下一个</button>
+                      <button class="secondary-btn small-btn" type="button" id="randomExampleBtn">随机</button>
+                      <button class="secondary-btn small-btn" type="button" id="referenceExampleBtn">参考答案</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <input class="w-tab-input" type="radio" name="wbtabs" id="wbtab-report" />
+              <label class="w-tab-head" for="wbtab-report">
+                <span class="w-tab-title">运行报告</span>
+                <span class="tab-dot" hidden></span>
+                <svg class="w-tab-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+              </label>
+              <div class="w-tab-body">
+                <div class="w-tab-inner">
+                  <div class="runtime-report" id="runtimeReport" hidden>
+                    <div class="runtime-report-header">
+                      <strong>运行报告</strong>
+                      <span id="runtimeReportStatus">等待运行</span>
+                    </div>
+                    <pre id="runtimeReportBody"></pre>
+                  </div>
+                </div>
+              </div>
+
+              <input class="w-tab-input" type="radio" name="wbtabs" id="wbtab-flow" />
+              <label class="w-tab-head" for="wbtab-flow">
+                <span class="w-tab-title">协同流程</span>
+                <span class="tab-dot" hidden></span>
+                <svg class="w-tab-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+              </label>
+              <div class="w-tab-body">
+                <div class="w-tab-inner">
+                  <!-- 原右侧栏协同流程，改为横向步骤条（节点由 app.js 的 renderPipeline 生成，类名不变） -->
+                  <ol class="pipeline-list" id="pipelineList"></ol>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="history" aria-labelledby="history-title">
+        <div class="history-hero">
+          <div>
+            <p class="eyebrow">Translation Archive</p>
+            <h2 id="history-title">翻译记录</h2>
+            <p>自动保存每次翻译的代码、模型、耗时、修复与编译信息。</p>
+          </div>
+          <button class="secondary-btn" type="button" id="refreshHistoryBtn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a8 8 0 0 0-7.45 5.07 1 1 0 1 1-1.86-.74A10 10 0 0 1 20 5.58V3a1 1 0 1 1 2 0v5a1 1 0 0 1-1 1h-5a1 1 0 1 1 0-2h2.52A8 8 0 0 0 12 4Zm8.69 10.93a1 1 0 0 1 .56 1.3A10 10 0 0 1 4 18.42V21a1 1 0 1 1-2 0v-5a1 1 0 0 1 1-1h5a1 1 0 1 1 0 2H5.48A8 8 0 0 0 19.4 15.5a1 1 0 0 1 1.29-.57Z"/></svg>
+            刷新记录
+          </button>
+        </div>
+
+        <div class="history-stats" aria-label="翻译统计">
+          <article class="history-stat"><span>全部翻译</span><strong id="historyStatTotal">0</strong><small>累计任务</small></article>
+          <article class="history-stat success"><span>成功完成</span><strong id="historyStatSuccess">0</strong><small id="historySuccessRate">成功率 0%</small></article>
+          <article class="history-stat project"><span>项目迁移</span><strong id="historyStatProjects">0</strong><small>项目级任务</small></article>
+          <article class="history-stat time"><span>平均耗时</span><strong id="historyStatDuration">0s</strong><small id="historyStatChars">累计 0 字符</small></article>
+        </div>
+
+        <section class="panel history-panel">
+          <div class="history-toolbar">
+            <label class="history-search">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 4a7 7 0 1 0 4.9 12l4.05 4.05a1 1 0 0 0 1.42-1.42l-4.05-4.05A7 7 0 0 0 11 4Zm-5 7a5 5 0 1 1 10 0 5 5 0 0 1-10 0Z"/></svg>
+              <input id="historySearch" type="search" placeholder="搜索标题、代码或模型…" />
+            </label>
+            <select id="historyModuleFilter" aria-label="按模块筛选">
+              <option value="">全部模块</option>
+              <option value="snippet">片段级</option>
+              <option value="project">项目级</option>
+              <option value="ui">UI 迁移</option>
+            </select>
+            <select id="historyStatusFilter" aria-label="按状态筛选">
+              <option value="">全部状态</option>
+              <option value="success">翻译成功</option>
+              <option value="failed">翻译失败</option>
+            </select>
+          </div>
+
+          <div class="history-layout">
+            <div class="history-list-wrap">
+              <div class="history-list-head">
+                <strong>最近记录</strong>
+                <span id="historyResultCount">0 条</span>
+              </div>
+              <div class="history-list" id="historyList">
+                <div class="history-empty">正在读取翻译记录…</div>
+              </div>
+            </div>
+
+            <article class="history-detail" id="historyDetail">
+              <div class="history-detail-empty">
+                <div class="history-empty-icon" aria-hidden="true">↺</div>
+                <strong>选择一条翻译记录</strong>
+                <p>这里会展示完整源码、仓颉结果、模型参数和验证信息。</p>
+              </div>
+            </article>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" id="assistant" aria-labelledby="assistant-title">
+        <div class="assistant-hero">
+          <div>
+            <p class="eyebrow">Cangjie Copilot</p>
+            <h2 id="assistant-title">仓颉迁移助手</h2>
+            <p>结合当前源码、翻译结果与项目上下文，实时解答迁移问题。</p>
+          </div>
+          <div class="assistant-live-badge" id="chatConnectionStatus">
+            <span aria-hidden="true"></span>
+            上下文已同步
+          </div>
+        </div>
+        <div class="chat-layout">
+          <section class="panel chat-panel" aria-label="大模型对话">
+            <div class="chat-toolbar">
+              <div>
+                <strong>迁移对话</strong>
+                <small id="chatSessionMeta">新会话 · 自动关联当前工作台</small>
+              </div>
+              <button class="ghost-btn" type="button" id="clearChatBtn" title="清空当前会话">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3a1 1 0 0 0-1 1v1H5a1 1 0 1 0 0 2h1v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7h1a1 1 0 1 0 0-2h-3V4a1 1 0 0 0-1-1H9Zm1 2h4v1h-4V5Zm-2 2h8v12H8V7Z"/></svg>
+                清空会话
+              </button>
+            </div>
+            <div class="chat-messages" id="chatMessages" aria-live="polite">
+              <div class="chat-welcome" id="chatWelcome">
+                <div class="welcome-mark" aria-hidden="true">CJ</div>
+                <div>
+                  <strong>你好，我是仓颉迁移助手</strong>
+                  <p>我已经读取右侧的工作台上下文。你可以让我解释翻译、定位错误，或给出项目迁移建议。</p>
+                </div>
+              </div>
+            </div>
+            <div class="quick-prompts" aria-label="快捷问题">
+              <button class="prompt-chip" type="button" data-prompt="解释当前源代码应该如何翻译成仓颉，并指出关键语法变化。"><span aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>解释当前翻译</button>
+              <button class="prompt-chip" type="button" data-prompt="检查当前仓颉输出可能存在的语法或类型问题，并给出修改建议。"><span aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01 9 11.01"/></svg></span>检查输出问题</button>
+              <button class="prompt-chip" type="button" data-prompt="分析当前项目的迁移风险，并按优先级给出下一步建议。"><span aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>分析迁移风险</button>
+              <button class="prompt-chip" type="button" data-prompt="把当前模块的实现思路整理成一段适合比赛答辩的说明。"><span aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>生成答辩说明</button>
+            </div>
+            <form class="chat-composer" id="chatForm">
+              <textarea id="chatInput" rows="1" maxlength="4000" placeholder="问一个关于当前代码或迁移结果的问题…" spellcheck="false" aria-label="输入问题"></textarea>
+              <div class="composer-footer">
+                <span><kbd>Enter</kbd> 发送 · <kbd>Shift</kbd> + <kbd>Enter</kbd> 换行</span>
+                <span class="composer-count" id="chatInputCount">0 / 4000</span>
+                <button class="stop-btn" type="button" id="chatStopBtn" hidden>
+                  <span aria-hidden="true"></span>停止
+                </button>
+                <button class="chat-send-btn" type="submit" id="chatSendBtn" aria-label="发送问题">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.4 20.4a1 1 0 0 0 1.16.13l16-8a1 1 0 0 0 0-1.8l-16-8A1 1 0 0 0 3.1 3.9L5.86 11H13a1 1 0 1 1 0 2H5.86L3.1 20.1a1 1 0 0 0 .3.3Z"/></svg>
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <aside class="panel chat-context-panel">
+            <div class="panel-header compact">
+              <div>
+                <p class="eyebrow">Live Context</p>
+                <h2>智能上下文</h2>
+              </div>
+              <span class="context-ready">已启用</span>
+            </div>
+            <p class="context-intro">每次提问都会自动携带以下信息，无需重复粘贴代码。</p>
+            <dl class="context-list">
+              <div>
+                <dt><span class="context-dot teal"></span>当前模块</dt>
+                <dd id="chatContextModule">片段级</dd>
+              </div>
+              <div>
+                <dt><span class="context-dot blue"></span>翻译策略</dt>
+                <dd id="chatContextStrategy">真实片段算法 API</dd>
+              </div>
+              <div>
+                <dt><span class="context-dot amber"></span>源语言</dt>
+                <dd id="chatContextLang">Java</dd>
+              </div>
+              <div>
+                <dt><span class="context-dot violet"></span>代码上下文</dt>
+                <dd id="chatContextSize">0 行</dd>
+              </div>
+              <div>
+                <dt><span class="context-dot green"></span>翻译输出</dt>
+                <dd id="chatContextOutput">尚未生成</dd>
+              </div>
+            </dl>
+            <div class="context-tip">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a8 8 0 0 0-4.72 14.46c.46.34.72.84.72 1.35V19a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-1.19c0-.51.26-1.01.72-1.35A8 8 0 0 0 12 2Zm2 17h-4v-1h4v1Zm1.53-4.15A3.72 3.72 0 0 0 14.1 16h-4.2a3.72 3.72 0 0 0-1.43-1.15A6 6 0 1 1 15.53 14.85ZM11 6a1 1 0 0 1 1-1 4 4 0 0 1 4 4 1 1 0 1 1-2 0 2 2 0 0 0-2-2 1 1 0 0 1-1-1Z"/></svg>
+              <span>切换工作台模块后，这里的上下文会自动更新。</span>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <dialog class="import-dialog" id="importDialog" aria-labelledby="importDialogTitle" aria-describedby="importDialogBody">
+    <h2 id="importDialogTitle">导入提示</h2>
+    <p id="importDialogBody"></p>
+    <div class="import-dialog-actions">
+      <button class="secondary-btn" type="button" id="importCancelBtn">取消</button>
+      <button class="primary-btn" type="button" id="importConfirmBtn">继续选择</button>
+    </div>
+  </dialog>
+
+  <script src="./animations.js"></script>
+  <script src="./assets/examples.js"></script>
+  <script src="./app.js?v=20261007-whole-project"></script>
+</body>
+</html>

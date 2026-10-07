@@ -1,0 +1,1078 @@
+/* ============================================================
+   linear.css — 线性浅色工具风布局层（Linear Light 信息架构）
+   引入位置：styles.css / animations.css 之后（必须最后加载以覆盖原深色规则）
+   只做外观覆盖与新增：不改任何 id / class 命名，不改任何 JS 逻辑。
+   主色 #087f78、背景 #f3f6fb 保持不变；代码编辑区保持深色（编辑器习惯）。
+   ============================================================ */
+
+/* ── 1. 应用外壳：侧边栏 248px → 220px，内容区由标题栏接管留白 ── */
+.app-shell {
+  grid-template-columns: 220px minmax(0, 1fr);
+}
+
+.main-content {
+  padding: 0 0 48px;
+}
+
+.view.active {
+  padding: 24px 32px;
+}
+
+/* ── 2. 侧边栏：深色渐变 → 白色 + 1px 右侧描边 ── */
+.sidebar {
+  gap: 20px;
+  padding: 20px 14px;
+  color: var(--ink);
+  background: var(--surface);
+  border-right: 1px solid var(--line);
+}
+
+.brand {
+  padding: 4px 8px 12px;
+}
+
+.brand span {
+  color: var(--muted);
+}
+
+.nav-list {
+  gap: 2px;
+}
+
+.nav-item {
+  position: relative;
+  min-height: 40px;
+  padding: 9px 12px;
+  border-radius: 6px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.nav-item:hover,
+.nav-item:focus-visible {
+  color: var(--ink);
+  background: #eef2f7;
+  outline: none;
+}
+
+/* 选中项：左侧 3px teal 竖条 + 浅 teal 背景 */
+.nav-item.active {
+  color: var(--teal-strong);
+  background: rgba(8, 127, 120, 0.08);
+  box-shadow: none;
+}
+
+.nav-item.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 3px;
+  height: 20px;
+  border-radius: 2px;
+  background: var(--teal);
+  transform: translateY(-50%);
+}
+
+/* 线性风格导航图标（18px，stroke 跟随文字色） */
+.nav-icon {
+  flex: 0 0 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ── 3. 侧边栏底部：后端状态卡片 ── */
+.backend-widget {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.backend-widget-copy {
+  min-width: 0;
+}
+
+.backend-widget-copy strong {
+  display: block;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.backend-widget-copy code {
+  display: block;
+  overflow: hidden;
+  color: var(--muted);
+  font: 10.5px var(--font-mono);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-dot {
+  flex: 0 0 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-dot.idle {
+  background: #94a3b8;
+  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.15);
+}
+
+.status-dot.ok {
+  background: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+}
+
+.status-dot.fail {
+  background: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+/* ── 4. 内容区顶部 48px 页面标题栏 ── */
+.topbar.page-titlebar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  height: 48px;
+  margin: 0;
+  padding: 0 32px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.page-title-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.page-titlebar h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.page-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.page-breadcrumb .breadcrumb-root {
+  color: var(--muted);
+}
+
+.page-breadcrumb .breadcrumb-sep {
+  color: #b6c2d1;
+}
+
+.page-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── 5. 视图切换：淡入 + 上移 8px，0.2s ── */
+.view.active {
+  animation: view-enter 0.2s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view.active {
+    animation: none;
+  }
+}
+
+/* ── 6. 首页 hero：深色卡片 → 全浅色工具风 ── */
+.home-hero {
+  border: 1px solid var(--line);
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 85% 12%, rgba(8, 127, 120, 0.06), transparent 46%),
+    radial-gradient(circle at 38% 110%, rgba(53, 106, 230, 0.05), transparent 52%),
+    linear-gradient(135deg, #ffffff 0%, #f7fbfa 60%, #f2f7fb 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 24px 48px rgba(21, 34, 53, 0.1);
+}
+
+.home-hero::before {
+  background-image:
+    linear-gradient(rgba(8, 127, 120, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(8, 127, 120, 0.05) 1px, transparent 1px);
+}
+
+.home-badge {
+  border: 1px solid rgba(8, 127, 120, 0.25);
+  color: var(--teal-strong);
+  background: rgba(8, 127, 120, 0.08);
+}
+
+.home-badge span {
+  background: var(--teal);
+  box-shadow: 0 0 0 5px rgba(8, 127, 120, 0.12);
+}
+
+.home-hero h2 {
+  color: var(--ink);
+}
+
+.home-hero h2 em {
+  background: linear-gradient(90deg, var(--teal), #14b8a6);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.home-hero-description {
+  color: var(--muted);
+}
+
+.home-primary-action {
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--teal), #0a9a90);
+  box-shadow: 0 12px 28px rgba(8, 127, 120, 0.24);
+}
+
+.home-primary-action::after {
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.home-primary-action:hover {
+  box-shadow: 0 16px 34px rgba(8, 127, 120, 0.3);
+}
+
+.home-secondary-action {
+  border: 1px solid var(--line);
+  color: var(--ink);
+  background: var(--surface);
+}
+
+.home-secondary-action:hover {
+  background: #f1f5f9;
+}
+
+.home-language-row {
+  border-top: 1px solid var(--line);
+}
+
+.home-language-label {
+  color: var(--muted);
+}
+
+.home-language-list strong {
+  border: 1px solid var(--line);
+  color: var(--ink);
+  background: #f8fafc;
+}
+
+.home-code-window {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 24px 48px rgba(21, 34, 53, 0.16);
+}
+
+.home-float-card {
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 8px 20px rgba(21, 34, 53, 0.12);
+}
+
+.home-float-card > span {
+  color: #ffffff;
+  background: var(--teal);
+}
+
+.home-float-card strong {
+  color: var(--ink);
+}
+
+.home-float-card small {
+  color: var(--muted);
+}
+
+.home-float-check > span {
+  color: #eff6ff;
+  background: var(--blue);
+}
+
+.home-hero-seam {
+  background: radial-gradient(52% 100% at 50% 0%, rgba(8, 127, 120, 0.09), transparent 74%);
+}
+
+/* ── 8. 工作台：一级标签 + 核心区 + 二级标签（双层结构） ── */
+
+/* 视觉隐藏工具类（保留 workbench-title 供 aria-labelledby 引用） */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 一级标签：全宽药丸 segmented，选中 teal 实底白字，0.15s 切换 */
+.workbench-primary-tabs {
+  display: flex;
+  justify-content: center;
+  margin: 18px 0 10px;
+}
+
+.workbench-primary-tabs .segmented {
+  gap: 2px;
+  padding: 4px;
+  box-shadow: inset 0 1px 2px rgba(21, 34, 53, 0.05);
+}
+
+.workbench-primary-tabs .segment {
+  min-width: 96px;
+  min-height: 32px;
+  padding: 6px 18px;
+  font-weight: 700;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.workbench-primary-tabs .segment:hover {
+  color: var(--teal-strong);
+}
+
+.workbench-primary-tabs .segment.active {
+  color: #ffffff;
+  background: var(--teal);
+  box-shadow: 0 2px 8px rgba(8, 127, 120, 0.35);
+  animation: none;
+}
+
+/* 模块说明（moduleNote）：12px 灰色提示行 */
+.module-note {
+  margin: 0 0 14px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: #6b788a;
+  background: none;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* 工作台单列全宽 */
+.workspace-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* 控制行：三个 select 紧凑 36px */
+.control-row label {
+  gap: 4px;
+  font-size: 12px;
+}
+
+.control-row select {
+  min-height: 36px;
+  padding: 0 32px 0 12px;
+}
+
+/* 双编辑器 480px + 36px 圆形 teal 渐变转换按钮 */
+.editor-grid {
+  min-height: 480px;
+}
+
+.editor-block {
+  min-height: 480px;
+}
+
+.project-result {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 400px;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.project-result[hidden],
+.output-block #targetCode[hidden],
+.output-block #copyBtn[hidden] {
+  display: none;
+}
+
+.project-result-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #e6f6ef;
+  color: #16835f;
+  font-size: 32px;
+  line-height: 56px;
+}
+
+.project-result h3,
+.project-result p {
+  margin: 0;
+}
+
+.project-result-hint {
+  max-width: 360px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.editor-swap {
+  width: 36px;
+  height: 36px;
+}
+
+.editor-swap svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* 操作栏右对齐 */
+.actionbar {
+  justify-content: flex-end;
+}
+
+/* 二级标签：36px 标签条 + radio 手风琴（同时只展开一个，0.2s 高度过渡） */
+.workbench-secondary-tabs {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, auto) minmax(0, 1fr);
+  align-items: start;
+  margin-top: 18px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.w-tab-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.w-tab-head {
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.w-tab-head:hover {
+  color: var(--ink);
+  background: #f1f5f9;
+}
+
+.w-tab-input:checked + .w-tab-head {
+  color: var(--teal-strong);
+  background: rgba(8, 127, 120, 0.07);
+}
+
+.w-tab-input:focus-visible + .w-tab-head {
+  box-shadow: inset 0 0 0 2px rgba(8, 127, 120, 0.4);
+}
+
+.w-tab-chevron {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.2s ease;
+}
+
+.w-tab-input:checked + .w-tab-head .w-tab-chevron {
+  transform: rotate(90deg);
+}
+
+/* 状态小标记（运行报告有新内容时由 JS 去掉 hidden 即可点亮） */
+.tab-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+}
+
+.tab-dot[hidden] {
+  display: none;
+}
+
+/* 手风琴面板：0fr→1fr 高度过渡 0.2s；面板间距用子元素 margin 提供，避免折叠时高度泄漏 */
+.w-tab-body {
+  grid-row: 2;
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.2s ease;
+}
+
+.w-tab-input:checked + .w-tab-head + .w-tab-body {
+  grid-template-rows: 1fr;
+}
+
+.w-tab-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.w-tab-inner > * {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.w-tab-inner > * + * {
+  margin-top: 14px;
+}
+
+.w-tab-inner > :first-child {
+  margin-top: 16px;
+}
+
+.w-tab-inner > :last-child {
+  margin-bottom: 18px;
+}
+
+.workbench-secondary-tabs:has(.w-tab-input:checked) .w-tab-body {
+  border-top: 1px solid var(--line);
+}
+
+/* 侧边栏状态卡片里的 JS 锚点（app.js 写入 #backendStatus，保持隐藏） */
+.backend-widget .backend-status[hidden] {
+  display: none;
+}
+
+/* 协同流程：横向步骤条（节点由 app.js 生成，仅重排样式，激活节点 teal 发光沿用原动画） */
+.pipeline-list {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+}
+
+.pipeline-node {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  text-align: center;
+}
+
+.pipeline-node:not(:first-child)::before {
+  content: "";
+  position: absolute;
+  top: 13px;
+  left: 0;
+  right: calc(50% + 18px);
+  bottom: auto;
+  border-left: 0;
+  border-top: 2px dashed #cbd5e1;
+}
+
+.pipeline-node.stage-done:not(:first-child)::before {
+  border-top-color: rgba(8, 127, 120, 0.35);
+}
+
+.pipeline-node-body {
+  padding-top: 0;
+}
+
+.pipeline-node-body span {
+  font-size: 12px;
+}
+
+/* ── 7. 响应式：与 styles.css 的断点保持一致（本文件最后加载，需重新声明） ── */
+@media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+    padding: 14px;
+  }
+
+  .main-content {
+    padding: 0 0 32px;
+  }
+
+  .view.active {
+    padding: 18px;
+  }
+
+  .topbar.page-titlebar {
+    position: static;
+    height: auto;
+    min-height: 48px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    padding: 10px 18px;
+  }
+
+  /* 二级标签条窄屏可横向滚动 */
+  .workbench-secondary-tabs {
+    grid-template-columns: repeat(5, auto);
+    overflow: visible;
+    overflow-x: auto;
+  }
+
+  .w-tab-head {
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 620px) {
+  .main-content {
+    padding: 0 0 24px;
+  }
+
+  .view.active {
+    padding: 12px;
+  }
+
+  .topbar.page-titlebar {
+    padding: 8px 12px;
+  }
+
+  .page-titlebar h1 {
+    font-size: 18px;
+  }
+}
+
+/* ── 9. 全局质感统一：Linear 浅色（色值不变，只改质感） ── */
+/*   去阴影 / 圆角两档 8·12 / 按钮纯色 / 字号阶梯 / 焦点光环 / 过渡 0.15s */
+
+/* 9.1 变量层：字体、字号阶梯（12 辅助 / 13 正文 / 15 强调 / 20 页标题 / 28 hero）、过渡、hover 阴影 */
+:root {
+  --font-sans: Inter, "MiSans", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --fs-sm: 13px; /* 正文 */
+  --fs-md: 15px; /* 强调 */
+  --fs-lg: 20px; /* 页标题 */
+  --fs-xl: 28px; /* hero 标题 */
+  --radius-lg: 12px;
+  --transition: all 0.15s ease;
+  --shadow-hover: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+/* 9.2 全局去阴影化：默认状态无阴影，hover 才出现浅阴影 + 上移 1px */
+.panel,
+.chat-panel,
+.history-panel,
+.home-hero,
+.home-support-card,
+.home-translation-option,
+.chat-bubble,
+.home-float-card,
+.home-code-window,
+.backend-widget,
+.chat-composer,
+.history-file-details,
+.context-list div,
+.chat-message > span,
+.chat-message.user > span,
+.home-history-count,
+.history-code-grid::after {
+  box-shadow: none;
+}
+
+.panel,
+.chat-panel,
+.history-panel,
+.home-hero,
+.home-support-card,
+.home-translation-option,
+.home-code-window {
+  transition: var(--transition);
+}
+
+.panel {
+  background: #ffffff;
+  backdrop-filter: none;
+}
+
+.panel:hover,
+.chat-panel:hover,
+.history-panel:hover,
+.home-hero:hover,
+.home-support-card:hover,
+.home-translation-option:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-1px);
+}
+
+.home-code-window:hover {
+  box-shadow: var(--shadow-hover);
+  transform: perspective(1100px) rotateY(-1.5deg) rotateX(1deg) translateY(-1px);
+}
+
+/* 9.3 圆角两档化：大面板 12px（删除 18px/28px），小控件 8px；药丸徽章保留 999px */
+.panel,
+.chat-panel,
+.history-panel,
+.home-hero,
+.home-code-window,
+.editor-block,
+.repair-panel,
+.runtime-report,
+.example-strip,
+.project-upload-panel,
+.backend-widget,
+.chat-composer,
+.history-file-details,
+.context-list div,
+.brand-mark,
+.welcome-mark,
+.history-empty-icon {
+  border-radius: 12px;
+}
+
+.primary-btn,
+.secondary-btn,
+.small-btn,
+.ghost-btn,
+.icon-btn,
+.home-primary-action,
+.home-secondary-action,
+.history-search input,
+.home-option-arrow,
+.home-code-body pre,
+.chat-send-btn,
+.stop-btn {
+  border-radius: 8px;
+}
+
+/* 9.4 按钮重做：主按钮纯色 #087f78（去渐变），hover 变深 #06655f；高度统一 32px（操作栏主按钮 36px） */
+.primary-btn,
+.secondary-btn {
+  min-height: 32px;
+  padding: 6px 14px;
+}
+
+.actionbar .primary-btn {
+  min-height: 36px;
+  padding: 8px 16px;
+}
+
+.primary-btn {
+  background: var(--teal);
+}
+
+.primary-btn:hover {
+  background: var(--teal-strong);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-1px);
+}
+
+.primary-btn:active,
+.secondary-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.secondary-btn {
+  background: #ffffff;
+}
+
+.secondary-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* 危险按钮（stop-btn）：统一白底 + 描边 */
+.stop-btn {
+  border: 1px solid var(--line);
+  color: #b45309;
+  background: #ffffff;
+}
+
+.stop-btn:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-1px);
+}
+
+/* 首页 CTA：与全局按钮一致（原 48px 渐变 → 32px 纯色） */
+.home-primary-action,
+.home-secondary-action {
+  min-height: 32px;
+  padding: 7px 16px;
+  font-weight: 600;
+}
+
+.home-primary-action {
+  color: #ffffff;
+  background: var(--teal);
+  box-shadow: none;
+}
+
+.home-primary-action::after {
+  display: none;
+}
+
+.home-primary-action:hover {
+  background: var(--teal-strong);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-1px);
+}
+
+.home-secondary-action {
+  border: 1px solid var(--line);
+  color: var(--ink);
+  background: #ffffff;
+  font-weight: 600;
+}
+
+.home-secondary-action:hover {
+  background: #ffffff;
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-1px);
+}
+
+/* 聊天发送按钮：纯色 + 32px */
+.chat-send-btn {
+  flex-basis: 32px;
+  width: 32px;
+  height: 32px;
+  background: var(--teal);
+}
+
+.chat-send-btn:hover:not(:disabled) {
+  background: var(--teal-strong);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-1px);
+}
+
+/* 9.5 字号阶梯与标题字重：600 统一，不再使用 800/900 */
+h1,
+h2,
+h3,
+h4,
+.brand-mark,
+.eyebrow,
+.home-badge,
+.home-code-arrow,
+.home-code-status span,
+.home-float-card > span,
+.home-option-arrow,
+.home-option-number,
+.home-card-link,
+.home-product-title,
+.language-detection-icon,
+.backend-status,
+.repair-badge,
+.repair-location,
+.repair-source-title,
+.repair-details summary,
+.editor-title,
+.run-state,
+.pipeline-marker,
+.assistant-live-badge,
+.welcome-mark,
+.chat-message > span,
+.chat-bubble strong,
+.chat-table-wrap th,
+.stop-btn,
+.context-list dt,
+.context-list dd,
+.history-stat span,
+.history-task-badge,
+.history-status,
+.history-file-details summary,
+.history-code-grid::after {
+  font-weight: 600;
+}
+
+.home-hero h2 {
+  font-size: 28px;
+  letter-spacing: -0.03em;
+}
+
+.home-hero-description {
+  font-size: 13px;
+}
+
+.history-detail-head h3 {
+  font-size: 20px;
+}
+
+.panel-header strong {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* 9.6 编辑器：源代码 textarea 改 #f8fafc，输出 pre 保持 #111827 深色（圆角已随面板统一 12px） */
+.editor-block textarea {
+  background: #f8fafc;
+  font-size: 13px;
+}
+
+/* 9.7 焦点态：2px teal 描边 + 外圈 3px 同色 15% 光晕（不挤动布局） */
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: rgba(8, 127, 120, 0.4);
+  box-shadow: 0 0 0 1px rgba(8, 127, 120, 0.4), 0 0 0 4px rgba(8, 127, 120, 0.15);
+}
+
+.chat-composer:focus-within {
+  border-color: rgba(8, 127, 120, 0.4);
+  box-shadow: 0 0 0 1px rgba(8, 127, 120, 0.4), 0 0 0 4px rgba(8, 127, 120, 0.15);
+}
+
+/* 9.8 过渡统一 0.15s：消灭 0.3s 以上慢过渡 */
+.editor-swap {
+  box-shadow: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.editor-swap:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.prompt-chip span {
+  transition: transform 0.15s ease;
+}
+
+.repair-panel {
+  transition: height 0.15s ease, opacity 0.15s ease, margin-bottom 0.15s ease, padding 0.15s ease;
+}
+
+.runtime-report {
+  transition: height 0.15s ease, opacity 0.15s ease, margin-top 0.15s ease;
+}
+
+::details-content {
+  transition: height 0.15s ease, content-visibility 0.15s allow-discrete;
+}
+
+.segment.active {
+  animation: none;
+}
+
+/* 9.9 描边统一：#dce4ed */
+.context-list div,
+.chat-composer,
+.prompt-chip,
+.chat-welcome {
+  border-color: var(--line);
+}
+
+/* 9.10 响应式补充（本文件最后加载，需重新声明） */
+@media (max-width: 620px) {
+  body {
+    font-size: 13px;
+  }
+
+  .home-hero {
+    border-radius: 12px;
+  }
+
+  .home-hero h2 {
+    font-size: 28px;
+  }
+
+  .home-section-heading h2 {
+    font-size: 20px;
+  }
+}
+
+/* 按迁移模式明确提示导入类型。 */
+.icon-btn.import-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: auto;
+  min-width: 92px;
+  padding: 0 10px;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.icon-btn.import-btn svg {
+  flex: 0 0 18px;
+}
+
+.import-hint {
+  margin: 0;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  color: #475569;
+  background: #f8fafc;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.import-dialog {
+  width: min(420px, calc(100vw - 32px));
+  max-width: none;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  color: var(--ink);
+  background: #fff;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.22);
+  font: inherit;
+}
+
+.import-dialog::backdrop {
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.import-dialog h2 {
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.import-dialog p {
+  margin: 0;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.import-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
